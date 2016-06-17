@@ -33,11 +33,15 @@ function [p] = permtest(x,y,nperm,method)
 % end
 % histogram(p0,30) %<- histogram is flat
 
-if nargin<3
+if nargin<3 || isempty(nperm)
     nperm = 1000;
 end
 if nargin <4
     method = 'auto';
+end
+
+if ~any(strcmp(method,{'auto','approximate','conservative','exact'}))
+    error('unknown method')
 end
 x = x(:);
 y = y(:);
@@ -90,7 +94,7 @@ if strcmp(method,'approximate')
 elseif strcmp(method,'exact')
     p = (1:mt)./mt;
     x2 = repmat(b,1,mt);
-    p = sum(binocdf(x2,nperm,p))/mt;
+    p = sum(binocdf(x2,nperm,p))/(mt+1);
 else
     warning('could not find chosen method')
 end
